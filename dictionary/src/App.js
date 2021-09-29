@@ -1,18 +1,20 @@
 import React from "react";
 
 import {Route, Switch} from 'react-router-dom'; 
+import { useSelector } from 'react-redux';
+import {db} from './firebase';
 import Dictionary from './Dictionary';
 import AddDic from './AddDic';
-import {db} from './firebase';
+import Spinner from './Spinner';
+
+
 
 function App() {
-  // const [list, setList] = React.useState({word : "댕댕이", explanation: "강아지를 의미한다.", example: "우리집 댕댕이 보여줄까?"});
+  const is_loaded  = useSelector((state) => state.dic.is_loaded);
 
-  React.useEffect(() => {
-    console.log(db);
-  })
   return (
     <div className="App">
+      {!is_loaded && <Spinner/>}
       <Route path="/" exact>
         <Dictionary />
       </Route>
