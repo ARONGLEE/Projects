@@ -1,6 +1,8 @@
 import { createAction, handleActions } from "redux-actions";
 import { produce } from "immer";
 import { firestore } from "../../shared/firebase";
+// import "moment";
+import moment from "moment";
 
 const SET_POST = "SET_POST";
 const ADD_POST = "ADD_POST";
@@ -13,17 +15,47 @@ const initialState = {
 };
 
 const initialPost = {
-  id: 0,
-  user_info: {
-    user_name: "arong",
-    user_profile:
-      "https://post-phinf.pstatic.net/MjAxODExMDFfMjQ0/MDAxNTQxMDc1OTYxNTQ1.swIFGuyl3AYqIIXURgGUzwhcfcHuPKQSGEqALrLXvJog.z-H2r8p-xtUxUYeJy9dqMx4QSezkf0jNwznlYr3gIhIg.JPEG/%EB%AA%A8%EB%84%A4_%EC%95%84%EB%A5%B4%EC%9E%A5%ED%87%B4%EC%9C%A0%EC%9D%98_%EC%96%91%EA%B7%80%EB%B9%84%EA%BD%83%281873%29.JPG?type=w1200",
-  },
+  //   id: 0,
+  //   user_info: {
+  //     user_name: "arong",
+  //     user_profile:
+  //       "https://post-phinf.pstatic.net/MjAxODExMDFfMjQ0/MDAxNTQxMDc1OTYxNTQ1.swIFGuyl3AYqIIXURgGUzwhcfcHuPKQSGEqALrLXvJog.z-H2r8p-xtUxUYeJy9dqMx4QSezkf0jNwznlYr3gIhIg.JPEG/%EB%AA%A8%EB%84%A4_%EC%95%84%EB%A5%B4%EC%9E%A5%ED%87%B4%EC%9C%A0%EC%9D%98_%EC%96%91%EA%B7%80%EB%B9%84%EA%BD%83%281873%29.JPG?type=w1200",
+  //   },
   image_url:
     "https://post-phinf.pstatic.net/MjAxODExMDFfMjQ0/MDAxNTQxMDc1OTYxNTQ1.swIFGuyl3AYqIIXURgGUzwhcfcHuPKQSGEqALrLXvJog.z-H2r8p-xtUxUYeJy9dqMx4QSezkf0jNwznlYr3gIhIg.JPEG/%EB%AA%A8%EB%84%A4_%EC%95%84%EB%A5%B4%EC%9E%A5%ED%87%B4%EC%9C%A0%EC%9D%98_%EC%96%91%EA%B7%80%EB%B9%84%EA%BD%83%281873%29.JPG?type=w1200",
-  contents: "모네입니다",
-  comment_cnt: 10,
-  insert_dt: "2021-09-30 05:38:02",
+  contents: "",
+  comment_cnt: 0,
+  insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
+  //   insert_dt: "2021-09-30 05:38:02",
+};
+
+const addPostFB = (contents = "") => {
+  return function (dispatch, getState, { history }) {
+    const postDB = firestore.collection("post");
+    const _user = getState().user.user;
+
+    const user_info = {
+      user_name: _user.user_name,
+      user_id: _user.uid,
+      user_profile: _user.user_profile,
+    };
+    const _post = {
+      ...initialPost,
+      contents: contents,
+      insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
+    };
+
+    postDB
+      .add({ ...user_info, ..._post })
+      .then((doc) => {
+        let post = { user_info, ..._post, id: doc.id };
+        dispatch(addPost(post));
+        history.replace("/");
+      })
+      .catch((err) => {
+        console.log("post 작성에 실패했어요!", err);
+      });
+  };
 };
 
 const getPostFB = () => {
@@ -33,23 +65,26 @@ const getPostFB = () => {
     postDB.get().then((docs) => {
       let post_list = [];
       docs.forEach((doc) => {
-        let _post = {
-          id: doc.id,
-          ...doc.data(),
-        };
+        let _post = doc.data();
 
-        let post = {
-          id: doc.id,
-          user_info: {
-            user_name: _post.user_name,
-            user_profile: _post.user_profile,
-            user_id: _post.user_id,
+        //Object.keys: key값들을 배열로 만들어 준다. -> 배열로 되면 내장함수 사용가능(reduce사용! filter, map과 비슷하다.)
+        //acc는 맨 처음에 아래 있는 딕셔너리가 나온다. cur은 키값이 하나씩 들어온다.
+        //[]를 사용하면 변수안에 들어있는 키값을 넣을 수 있다.
+        //_post[cur] : value
+        //cur.indexOf("user_"): 키값에 user_가 포함이 되냐는 의미
+        //!== -1 : -1이 아니라면의 의미는 포함이 된다면이라는 의미
+        let post = Object.keys(_post).reduce(
+          (acc, cur) => {
+            if (cur.indexOf("user_") !== -1) {
+              return {
+                ...acc,
+                user_info: { ...acc.user_info, [cur]: _post[cur] },
+              };
+            }
+            return { ...acc, [cur]: _post[cur] };
           },
-          image_url: _post.image_url,
-          contents: _post.contents,
-          comment_cnt: _post.comment_cnt,
-          insert_dt: _post.insert_dt,
-        };
+          { id: doc.id, user_info: {} } //id가 안들어있기때문에 미리 id값 넣어두기
+        );
 
         post_list.push(post);
       });
@@ -64,9 +99,13 @@ export default handleActions(
   {
     [SET_POST]: (state, action) =>
       produce(state, (draft) => {
+        //빈 배열에 post_list 넣어주기!
         draft.list = action.payload.post_list;
       }),
-    [ADD_POST]: (state, action) => produce(state, (draft) => {}),
+    [ADD_POST]: (state, action) =>
+      produce(state, (draft) => {
+        draft.list.unshift(action.payload.post);
+      }),
   },
   initialState
 );
@@ -75,6 +114,7 @@ const actionCreators = {
   setPost,
   addPost,
   getPostFB,
+  addPostFB,
 };
 
 export { actionCreators };

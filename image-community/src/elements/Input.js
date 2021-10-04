@@ -12,7 +12,7 @@ const Input = (props) => {
         <ElTextarea
           rows={10}
           placeholder={placeholder}
-          onchange={_onChange}
+          onChange={_onChange}
         ></ElTextarea>
       </Grid>
     );
