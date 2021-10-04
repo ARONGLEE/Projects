@@ -1,6 +1,6 @@
 import React from "react";
 
-import {Route, Switch} from 'react-router-dom'; 
+import {Route} from 'react-router-dom'; 
 import { useSelector } from 'react-redux';
 import {db} from './firebase';
 import Dictionary from './Dictionary';
