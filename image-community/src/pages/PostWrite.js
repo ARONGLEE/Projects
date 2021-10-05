@@ -4,22 +4,44 @@ import Upload from "../shared/Upload";
 
 import { useSelector, useDispatch } from "react-redux";
 import { actionCreators as postActions } from "../redux/modules/post";
-
+import image, { actionCreators as imageActions } from "../redux/modules/image";
 const PostWrite = (props) => {
   const dispatch = useDispatch();
   const is_login = useSelector((state) => state.user.is_login);
   const preview = useSelector((state) => state.image.preview);
+  const post_list = useSelector((state) => state.post.list);
+
+  const post_id = props.match.params.id;
+  const is_edit = post_id ? true : false;
+
   const { history } = props;
 
-  const [contents, setContents] = React.useState("");
+  let _post = is_edit ? post_list.find((p) => p.id === post_id) : null;
+
+  const [contents, setContents] = React.useState(_post ? _post.contents : "");
+
+  React.useEffect(() => {
+    if (is_edit && !_post) {
+      history.goBack();
+
+      return;
+    }
+
+    if (is_edit) {
+      dispatch(imageActions.setPreview(_post.image_url));
+    }
+  }, []);
 
   const changeContents = (e) => {
     setContents(e.target.value);
-    console.log(e.target.value);
   };
 
   const addPost = () => {
     dispatch(postActions.addPostFB(contents));
+  };
+
+  const editPost = () => {
+    dispatch(postActions.editPostFB(post_id, { contents: contents }));
   };
   if (!is_login) {
     return (
@@ -41,8 +63,8 @@ const PostWrite = (props) => {
   return (
     <React.Fragment>
       <Grid padding="16px">
-        <Text margin="0px" size="32px" bold>
-          게시글 작성
+        <Text margin="0px" size="36px" bold>
+          {is_edit ? "게시글 수정" : "게시글 작성"}
         </Text>
         <Upload />
       </Grid>
@@ -59,6 +81,7 @@ const PostWrite = (props) => {
       </Grid>
       <Grid padding="16px">
         <Input
+          value={contents}
           multiLine
           label="게시글 내용"
           placeholder="게시글 작성"
@@ -66,7 +89,11 @@ const PostWrite = (props) => {
         />
       </Grid>
       <Grid padding="16px">
-        <Button text="게시글 작성" _onClick={addPost}></Button>
+        {is_edit ? (
+          <Button text="게시글 수정" _onClick={editPost}></Button>
+        ) : (
+          <Button text="게시글 작성" _onClick={addPost}></Button>
+        )}
       </Grid>
     </React.Fragment>
   );
