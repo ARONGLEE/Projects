@@ -8,6 +8,7 @@ import { actionCreators as postActions } from "../redux/modules/post";
 const PostWrite = (props) => {
   const dispatch = useDispatch();
   const is_login = useSelector((state) => state.user.is_login);
+  const preview = useSelector((state) => state.image.preview);
   const { history } = props;
 
   const [contents, setContents] = React.useState("");
@@ -51,7 +52,10 @@ const PostWrite = (props) => {
         </Text>
       </Grid>
       <Grid>
-        <Image shape="rectangle" src={props.src} />
+        <Image
+          shape="rectangle"
+          src={preview ? preview : "http://via.placeholder.com/400x300"}
+        />
       </Grid>
       <Grid padding="16px">
         <Input
