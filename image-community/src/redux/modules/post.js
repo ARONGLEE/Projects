@@ -9,15 +9,23 @@ import { actionCreators as imageActions } from "./image";
 const SET_POST = "SET_POST";
 const ADD_POST = "ADD_POST";
 const EDIT_POST = "EDIT_POST";
+const LOADING = "LOADING";
 
-const setPost = createAction(SET_POST, (post_list) => ({ post_list }));
+const setPost = createAction(SET_POST, (post_list, paging) => ({
+  post_list,
+  paging,
+}));
 const addPost = createAction(ADD_POST, (post) => ({ post }));
 const editPost = createAction(EDIT_POST, (post_id, post) => ({
   post_id,
   post,
 }));
+const loading = createAction(LOADING, (is_loading) => ({ is_loading }));
+
 const initialState = {
   list: [],
+  paging: { start: null, next: null, size: 3 },
+  is_loading: false,
 };
 
 const initialPost = {
@@ -147,10 +155,68 @@ const addPostFB = (contents = "") => {
   };
 };
 
-const getPostFB = () => {
+const getPostFB = (start = null, size = 3) => {
   return function (dispatch, getState, { history }) {
+    let _paging = getState().post.paging;
+
+    if (_paging.start && !_paging.next) {
+      return;
+    }
+
+    dispatch(loading(true));
     const postDB = firestore.collection("post");
 
+    let query = postDB.orderBy("insert_dt", "desc");
+
+    if (start) {
+      query = query.startAt(start);
+    }
+    query
+      .limit(size + 1)
+      .get()
+      .then((docs) => {
+        let post_list = [];
+
+        let paging = {
+          start: docs.docs[0],
+          next:
+            docs.docs.length === size + 1
+              ? docs.docs[docs.docs.length - 1]
+              : null,
+          size: size,
+        };
+
+        docs.forEach((doc) => {
+          let _post = doc.data();
+
+          //Object.keys: key값들을 배열로 만들어 준다. -> 배열로 되면 내장함수 사용가능(reduce사용! filter, map과 비슷하다.)
+          //acc는 맨 처음에 아래 있는 딕셔너리가 나온다. cur은 키값이 하나씩 들어온다.
+          //[]를 사용하면 변수안에 들어있는 키값을 넣을 수 있다.
+          //_post[cur] : value
+          //cur.indexOf("user_"): 키값에 user_가 포함이 되냐는 의미
+          //!== -1 : -1이 아니라면의 의미는 포함이 된다면이라는 의미
+          let post = Object.keys(_post).reduce(
+            (acc, cur) => {
+              if (cur.indexOf("user_") !== -1) {
+                return {
+                  ...acc,
+                  user_info: { ...acc.user_info, [cur]: _post[cur] },
+                };
+              }
+              return { ...acc, [cur]: _post[cur] };
+            },
+            { id: doc.id, user_info: {} } //id가 안들어있기때문에 미리 id값 넣어두기
+          );
+
+          post_list.push(post);
+        });
+
+        post_list.pop();
+
+        dispatch(setPost(post_list, paging));
+      });
+
+    return;
     postDB.get().then((docs) => {
       let post_list = [];
       docs.forEach((doc) => {
@@ -189,7 +255,9 @@ export default handleActions(
     [SET_POST]: (state, action) =>
       produce(state, (draft) => {
         //빈 배열에 post_list 넣어주기!
-        draft.list = action.payload.post_list;
+        draft.list.push(...action.payload.post_list);
+        draft.paging = action.payload.paging;
+        draft.is_loading = false;
       }),
     [ADD_POST]: (state, action) =>
       produce(state, (draft) => {
@@ -200,6 +268,10 @@ export default handleActions(
         let idx = draft.list.findIndex((p) => p.id === action.payload.post_id);
 
         draft.list[idx] = { ...draft.list[idx], ...action.payload.post };
+      }),
+    [LOADING]: (state, action) =>
+      produce(state, (draft) => {
+        draft.is_loading = action.payload.is_loading;
       }),
   },
   initialState
