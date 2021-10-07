@@ -18,10 +18,10 @@ const Header = (props) => {
   console.log(is_login);
   if (is_login && is_session) {
     return (
-      <Grid is_flex padding="16px">
+      <Grid is_flex padding="16px" bg={"#FFB838"}>
         <Grid>
-          <Text margin="0px" size="24px" bold>
-            헬로
+          <Text margin="0px" size="24px" bold color="white">
+            HELLO
           </Text>
         </Grid>
 
@@ -50,10 +50,10 @@ const Header = (props) => {
   return (
     <>
       <React.Fragment>
-        <Grid is_flex padding="16px">
+        <Grid is_flex padding="16px" bg={"#FFB838"}>
           <Grid>
-            <Text margin="0px" size="24px" bold>
-              헬로
+            <Text margin="0px" size="24px" bold color="white">
+              HELLO
             </Text>
           </Grid>
 

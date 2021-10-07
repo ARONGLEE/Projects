@@ -63,13 +63,13 @@ const PostWrite = (props) => {
   }
   return (
     <React.Fragment>
-      <Grid padding="16px">
-        <Text margin="0px" size="36px" bold>
+      <Grid padding="16px" bg="#FEE5A5">
+        <Text margin="0px 0px 20px 0px" size="32px" bold>
           {is_edit ? "게시글 수정" : "게시글 작성"}
         </Text>
         <Upload />
       </Grid>
-      <Grid padding="16px">
+      <Grid padding="16px" bg="#FEE5A5">
         <Text margin="0px" size="24px" bold>
           미리보기
         </Text>
@@ -80,7 +80,7 @@ const PostWrite = (props) => {
           src={preview ? preview : "http://via.placeholder.com/400x300"}
         />
       </Grid>
-      <Grid padding="16px">
+      <Grid padding="16px" bg="#F7F6EE">
         <Input
           value={contents}
           multiLine
@@ -89,7 +89,7 @@ const PostWrite = (props) => {
           _onChange={changeContents}
         />
       </Grid>
-      <Grid padding="16px">
+      <Grid padding="16px" bg="#F7F6EE">
         {is_edit ? (
           <Button text="게시글 수정" _onClick={editPost}></Button>
         ) : (

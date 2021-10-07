@@ -6,6 +6,7 @@ import Permit from "../shared/Permit";
 
 import { useDispatch, useSelector } from "react-redux";
 import { actionCreators as postActions } from "../redux/modules/post";
+import { Grid } from "../elements";
 
 const PostDetail = (props) => {
   const dispatch = useDispatch();
@@ -25,13 +26,15 @@ const PostDetail = (props) => {
 
   return (
     <React.Fragment>
-      {post && (
-        <Post {...post} is_me={post.user_info.user_id === user_info?.uid} />
-      )}
-      <Permit>
-        <CommentWrite post_id={id} />
-      </Permit>
-      <CommentList post_id={id} />
+      <Grid bg="#FEE5A5">
+        {post && (
+          <Post {...post} is_me={post.user_info.user_id === user_info?.uid} />
+        )}
+        <Permit>
+          <CommentWrite post_id={id} />
+        </Permit>
+        <CommentList post_id={id} />
+      </Grid>
     </React.Fragment>
   );
 };

@@ -40,6 +40,7 @@ const initialPost = {
   image_url:
     "https://post-phinf.pstatic.net/MjAxODExMDFfMjQ0/MDAxNTQxMDc1OTYxNTQ1.swIFGuyl3AYqIIXURgGUzwhcfcHuPKQSGEqALrLXvJog.z-H2r8p-xtUxUYeJy9dqMx4QSezkf0jNwznlYr3gIhIg.JPEG/%EB%AA%A8%EB%84%A4_%EC%95%84%EB%A5%B4%EC%9E%A5%ED%87%B4%EC%9C%A0%EC%9D%98_%EC%96%91%EA%B7%80%EB%B9%84%EA%BD%83%281873%29.JPG?type=w1200",
   contents: "",
+  like_cnt: 0,
   comment_cnt: 0,
   insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
   //   insert_dt: "2021-09-30 05:38:02",
@@ -60,7 +61,7 @@ const deletePostFB = (post_id) => {
       .then((doc) => {
         dispatch(deletePost(post_id));
         history.replace("/");
-        console.log(post_id);
+        //console.log(post_id);
       })
       .catch((err) => {
         console.log("post 삭제에 실패했어요!", err);

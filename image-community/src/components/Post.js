@@ -8,19 +8,21 @@ import { actionCreators as postActions } from "../redux/modules/post";
 
 import { history } from "../redux/configureStore";
 import { useDispatch, useSelector } from "react-redux";
+import HeartButton from "./HeartButton";
 
 const Post = (props) => {
   const dispatch = useDispatch();
-  console.log(props.id);
+
   const deletePost = (e) => {
     e.preventDefault();
     e.stopPropagation();
     dispatch(postActions.deletePostFB(props.id));
+    console.log(props.id);
   };
 
   return (
     <React.Fragment>
-      <Grid is_flex padding="16px">
+      <Grid is_flex padding="16px" bg="#FEE5A5">
         <Grid is_flex width="auto">
           <Image shape="circle" src={props.src} />
           <Text bold>{props.user_info.user_name}</Text>
@@ -53,16 +55,24 @@ const Post = (props) => {
           )}
         </Grid>
       </Grid>
-      <Grid padding="16px">
+      <Grid padding="16px" bg="#FEE5A5">
         <Text>{props.contents}</Text>
       </Grid>
       <Grid>
         <Image shape="rectangle" src={props.image_url} />
       </Grid>
-      <Grid padding="16px">
-        <Text margin="0px" bold>
-          댓글 {props.comment_cnt}개
-        </Text>
+      <Grid padding="16px" is_flex>
+        <Grid padding="5px" bg="#FEE5A5">
+          <Text margin="0px" bold>
+            댓글 {props.comment_cnt}개
+          </Text>
+        </Grid>
+        <Grid is_flex padding="5px">
+          <HeartButton margin="auto" />
+          <Text margin="0px" bold>
+            좋아요 {props.like_cnt}개
+          </Text>
+        </Grid>
       </Grid>
     </React.Fragment>
   );
@@ -80,6 +90,7 @@ Post.defaultProps = {
   comment_cnt: 10,
   insert_dt: "2021-09-30 05:38:02",
   is_me: false,
+  like_cnt: 10,
 };
 
 export default Post;
