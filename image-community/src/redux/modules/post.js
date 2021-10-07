@@ -9,6 +9,7 @@ import { actionCreators as imageActions } from "./image";
 const SET_POST = "SET_POST";
 const ADD_POST = "ADD_POST";
 const EDIT_POST = "EDIT_POST";
+const DELETE_POST = "DELETE_POST";
 const LOADING = "LOADING";
 
 const setPost = createAction(SET_POST, (post_list, paging) => ({
@@ -20,6 +21,7 @@ const editPost = createAction(EDIT_POST, (post_id, post) => ({
   post_id,
   post,
 }));
+const deletePost = createAction(DELETE_POST, (post_id) => ({ post_id }));
 const loading = createAction(LOADING, (is_loading) => ({ is_loading }));
 
 const initialState = {
@@ -41,6 +43,29 @@ const initialPost = {
   comment_cnt: 0,
   insert_dt: moment().format("YYYY-MM-DD hh:mm:ss"),
   //   insert_dt: "2021-09-30 05:38:02",
+};
+
+const deletePostFB = (post_id) => {
+  return function (dispatch, getState, { history }) {
+    const postDB = firestore.collection("post");
+
+    if (!post_id) {
+      window.alert("삭제할 수 없는 게시글입니다!");
+      return;
+    }
+
+    postDB
+      .doc(post_id)
+      .delete()
+      .then((doc) => {
+        dispatch(deletePost(post_id));
+        history.replace("/");
+        console.log(post_id);
+      })
+      .catch((err) => {
+        console.log("post 삭제에 실패했어요!", err);
+      });
+  };
 };
 
 const editPostFB = (post_id = null, post = {}) => {
@@ -307,6 +332,15 @@ export default handleActions(
 
         draft.list[idx] = { ...draft.list[idx], ...action.payload.post };
       }),
+    [DELETE_POST]: (state, action) =>
+      produce(state, (draft) => {
+        let idx = draft.list.findIndex((p) => p.id === action.payload.post_id);
+
+        if (idx !== -1) {
+          //배열에서 idx 위치의 요소 1개를 지운다.
+          draft.list.splice(idx, 1);
+        }
+      }),
     [LOADING]: (state, action) =>
       produce(state, (draft) => {
         draft.is_loading = action.payload.is_loading;
@@ -319,9 +353,11 @@ const actionCreators = {
   setPost,
   addPost,
   editPost,
+  deletePost,
   getPostFB,
   addPostFB,
   editPostFB,
+  deletePostFB,
   getOnePostFB,
 };
 

@@ -4,10 +4,20 @@ import React from "react";
 // import Text from "../elements/Text";
 
 import { Button, Grid, Image, Text } from "../elements";
+import { actionCreators as postActions } from "../redux/modules/post";
 
 import { history } from "../redux/configureStore";
+import { useDispatch, useSelector } from "react-redux";
 
 const Post = (props) => {
+  const dispatch = useDispatch();
+  console.log(props.id);
+  const deletePost = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatch(postActions.deletePostFB(props.id));
+  };
+
   return (
     <React.Fragment>
       <Grid is_flex padding="16px">
@@ -19,7 +29,9 @@ const Post = (props) => {
           <Text>{props.insert_dt}</Text>
           {props.is_me && (
             <Button
-              _onClick={() => {
+              _onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 history.push(`/write/${props.id}`);
               }}
               width="auto"
@@ -27,6 +39,16 @@ const Post = (props) => {
               padding="4px"
             >
               수정
+            </Button>
+          )}
+          {props.is_me && (
+            <Button
+              _onClick={deletePost}
+              width="auto"
+              margin="4px"
+              padding="4px"
+            >
+              삭제
             </Button>
           )}
         </Grid>
