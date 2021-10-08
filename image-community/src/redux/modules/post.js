@@ -54,6 +54,9 @@ const deletePostFB = (post_id) => {
       window.alert("삭제할 수 없는 게시글입니다!");
       return;
     }
+    if (!window.confirm("게시글을 삭제하시겠습니까?")) {
+      return false;
+    }
 
     postDB
       .doc(post_id)

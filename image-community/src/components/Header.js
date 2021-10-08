@@ -1,6 +1,5 @@
 import React from "react";
 import { Grid, Text, Button } from "../elements";
-import { getCookie, deleteCookie } from "../shared/Cookie";
 
 import { useSelector, useDispatch } from "react-redux";
 import { actionCreators as userActions } from "../redux/modules/user";
@@ -20,26 +19,35 @@ const Header = (props) => {
     return (
       <Grid is_flex padding="16px" bg={"#FFB838"}>
         <Grid>
-          <Text margin="0px" size="24px" bold color="white">
+          <Text
+            margin="0px"
+            size="24px"
+            bold
+            color="white"
+            _onClick={() => {
+              history.push("/");
+            }}
+          >
             HELLO
           </Text>
         </Grid>
 
         <Grid is_flex>
-          <Button text="내정보"></Button>
+          <NotiBadge
+            _onClick={() => {
+              history.push("/noti");
+            }}
+          />
+          <Button text="내정보" margin="0px 5px" cursor="pointer"></Button>
           {/* <Button
             _onClick={() => {
               history.push("/noti");
             }}
             text="알림"
           ></Button> */}
-          <NotiBadge
-            _onClick={() => {
-              history.push("/noti");
-            }}
-          />
           <Button
             text="로그아웃"
+            cursor="pointer"
             _onClick={() => {
               dispatch(userActions.logoutFB());
             }}
@@ -57,7 +65,15 @@ const Header = (props) => {
       <React.Fragment>
         <Grid is_flex padding="16px" bg={"#FFB838"}>
           <Grid>
-            <Text margin="0px" size="24px" bold color="white">
+            <Text
+              margin="0px"
+              size="24px"
+              bold
+              color="white"
+              _onClick={() => {
+                history.push("/");
+              }}
+            >
               HELLO
             </Text>
           </Grid>
@@ -65,12 +81,14 @@ const Header = (props) => {
           <Grid is_flex>
             <Button
               text="로그인"
+              cursor="pointer"
               _onClick={() => {
                 history.push("/login");
               }}
             ></Button>
             <Button
               text="회원가입"
+              cursor="pointer"
               _onClick={() => {
                 history.push("/signup");
               }}

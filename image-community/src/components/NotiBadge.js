@@ -1,6 +1,6 @@
 import React from "react";
 import { Badge } from "@material-ui/core";
-import NotificationsIcon from "@mui/icons-material/Notifications";
+import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 
 import { realtime } from "../shared/firebase";
 import { useSelector } from "react-redux";
@@ -33,7 +33,7 @@ const NotiBadge = (props) => {
         invisible={is_read}
         onClick={notiCheck}
       >
-        <NotificationsIcon />
+        <NotificationsNoneOutlinedIcon cursor="pointer" />
       </Badge>
     </React.Fragment>
   );

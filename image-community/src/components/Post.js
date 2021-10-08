@@ -9,6 +9,8 @@ import { actionCreators as postActions } from "../redux/modules/post";
 import { history } from "../redux/configureStore";
 import { useDispatch, useSelector } from "react-redux";
 import HeartButton from "./HeartButton";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
 
 const Post = (props) => {
   const dispatch = useDispatch();
@@ -43,30 +45,19 @@ const Post = (props) => {
           <Text bold>{props.user_info.user_name}</Text>
         </Grid>
         <Grid is_flex width="auto">
-          <Text>{props.insert_dt}</Text>
+          <Text margin="0px 10px">{props.insert_dt}</Text>
           {props.is_me && (
-            <Button
-              _onClick={(e) => {
+            <CreateOutlinedIcon
+              onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 history.push(`/write/${props.id}`);
               }}
-              width="auto"
-              margin="4px"
-              padding="4px"
-            >
-              수정
-            </Button>
+              cursor="pointer"
+            />
           )}
           {props.is_me && (
-            <Button
-              _onClick={deletePost}
-              width="auto"
-              margin="4px"
-              padding="4px"
-            >
-              삭제
-            </Button>
+            <DeleteOutlineIcon onClick={deletePost} cursor="pointer" />
           )}
         </Grid>
       </Grid>
