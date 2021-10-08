@@ -10,6 +10,7 @@ const PostWrite = (props) => {
   const dispatch = useDispatch();
   const is_login = useSelector((state) => state.user.is_login);
   const preview = useSelector((state) => state.image.preview);
+  // const is_uploading = useSelector((state) => state.image.uploading);
   const post_list = useSelector((state) => state.post.list);
 
   const post_id = props.match.params.id;
@@ -38,6 +39,10 @@ const PostWrite = (props) => {
   };
 
   const addPost = () => {
+    if (contents === "") {
+      window.alert("이미지와 게시글을 모두 입력해주세요!");
+      return;
+    }
     dispatch(postActions.addPostFB(contents));
   };
 

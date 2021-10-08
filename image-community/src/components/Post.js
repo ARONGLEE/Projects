@@ -13,6 +13,21 @@ import HeartButton from "./HeartButton";
 const Post = (props) => {
   const dispatch = useDispatch();
 
+  // const [like, setLike] = React.useState(false);
+
+  // React.useEffect(async () => {
+  //   const fetchData = async () => {
+  //     const res = await axios.get();
+  //     if (res.data.type === "liked") setLike(true);
+  //   };
+  //   fetchData();
+  // }, []);
+
+  // const toggleLike = async (e) => {
+  //   const res = await axios.post();
+  //   setLike(!like);
+  // };
+
   const deletePost = (e) => {
     e.preventDefault();
     e.stopPropagation();

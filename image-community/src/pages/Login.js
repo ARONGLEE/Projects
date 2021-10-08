@@ -48,6 +48,9 @@ const Login = (props) => {
             _onChange={(e) => {
               setPwd(e.target.value);
             }}
+            value={pwd}
+            onSubmit={login}
+            is_submit
           />
         </Grid>
       </Grid>
