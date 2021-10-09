@@ -11,7 +11,7 @@
 
 ## :link: 링크
 
-단어장 바로가기 : https://happyarong.shop/
+매거진 사이트 바로가기 : http://happyarong.shop.s3-website.ap-northeast-2.amazonaws.com/
 
 <br><br>
 
